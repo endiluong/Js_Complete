@@ -2,12 +2,57 @@
 //
 //
 var budgetController = (function () {
-  
-   let x = 10;
+   //Create Expanse Object
+   var Expense = function (id, description, value) {
+      this.id = id;
+      this.description = description;
+      this.value = value;
+   };
 
-   return function (a) {
-      console.log(x + a);
-   }
+   var Income = function (id, description, value) {
+      this.id = id;
+      this.description = description;
+      this.value = value;
+   };
+
+   //Create Data Structure for more complex data process
+   var data = {
+      allItems: {
+         expense: [],
+         income: []
+      },
+      total: {
+         exp: 0,
+         inc: 0
+      }
+   };
+
+   return {
+      addItem: function (type, des, val) {
+         var newItem, ID;
+         if (data.allItems[type].length > 0) {
+            ID = data.allItems[type][data.allItems[type].length - 1].id + 1;
+         } else {
+            ID=0;
+         }
+         //Use Type to define expense or income
+         // then pass ID from the upper ID Processor to the new Item = new[type] along with value and des
+         //Create new Item on Type
+         if (type === 'expense') {
+            newItem = new Expense(ID, des, val);
+         } else if (type === 'income') {
+            newItem = new Income(ID, des, val);
+         }
+         //Put to Data Structure
+         data.allItems[type].push(newItem);
+         //Return new Element
+         return newItem;
+      },
+
+         testing:function(){
+            console.log(data);
+         }
+   };
 
 })();
 
@@ -28,7 +73,7 @@ var UIController = (function () {
    //
    //
    return {
-      getinput: function () {
+      getInput: function () {
          //return object include input type, vlaue and description
          return {
             type: document.querySelector(DOMstring.inputType).value,
@@ -66,14 +111,16 @@ var controller = (function (budgetCtrl, UICtrl) {
          }
       });
    };
-   //
-   //
-   //
+
+
    var ctrlAddItem = function () {
+      var input, newItem;
       // 1.get from input
-      var input = UICtrl.getinput();
+      input = UICtrl.getInput();
       console.log(input);
       // 2. add item to bdget Contrller
+      newItem = budgetCtrl.addItem(input.type, input.description, input.value);
+
       // 3. To UI
       // 4. Cal budget
       // 5. Update UI
@@ -82,7 +129,7 @@ var controller = (function (budgetCtrl, UICtrl) {
 
 
    return {
-      init: function(){
+      init: function () {
          console.log("Started");
          setUpEventListener();
       }
